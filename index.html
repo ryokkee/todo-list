@@ -1,0 +1,137 @@
+<!-- 担当者登録、担当者での絞り込み機能を追加 Ver5.0 -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        .alert {
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <h1>TODOアプリ</h1>
+        <input v-model="inputData" type="text" placeholder="対応内容">
+        <input v-model="userName" type="text" placeholder="担当者">
+        <input v-model="exDate" type="date">
+        <button @click="addTodo">登録するよ</button>
+        <div>
+            <h2>未完了</h2>
+            <input v-model="filterName" type="text" placeholder="絞り込み">
+            <div>
+                <div v-for="todoItem in doing">
+                    <p v-bind:class="{ alert: todoItem.exDate < '2020-10-15' }">
+                        {{ todoItem.exDate }} : {{ todoItem.id }}. {{ todoItem.text }} <span color="grey"> {{ todoItem.name }} </span>
+                    </p>
+                    <button @click="removeTodo(todoItem.id)">削除</button>
+                    <button @click="todoItem.done = true">完了</button>
+                </div>
+            </div>
+        </div>
+        <div>
+            <h2>完了</h2>
+            <div>
+                <div v-for="todoItem in completed">
+                    {{ todoItem.id }}. {{ todoItem.text }}
+                    <button @click="todoItem.done = false">未完了に戻す</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        var app = new Vue({
+            el: "#app",
+            data: {
+                userName: "",
+                filterName: "",
+                exDate: "",
+                inputData: null,
+                checkedItems: [],
+                todoList: [{
+                    id: 1,
+                    name: "長岡",
+                    text: "朝ごはん作る",
+                    done: false,
+                    deleted: false,
+                    exDate: "2020-10-01"
+                }, {
+                    id: 2,
+                    name: "松田",
+                    text: "洋服を着替える",
+                    done: false,
+                    deleted: false,
+                    exDate: "2020-10-10"
+                }, {
+                    id: 3,
+                    name: "豊田",
+                    text: "荷物を用意する",
+                    done: false,
+                    deleted: false,
+                    exDate: "2020-10-15"
+                }, {
+                    id: 4,
+                    name: "長岡",
+                    text: "朝ごはんを食べる",
+                    done: false,
+                    deleted: false,
+                    exDate: "2020-10-21"
+                }, {
+                    id: 5,
+                    name: "豊田",
+                    text: "会社に行く",
+                    done: false,
+                    deleted: false,
+                    exDate: "2020-10-23"
+                }, {
+                    id: 6,
+                    name: "松田",
+                    text: "仕事をする",
+                    done: false,
+                    deleted: false,
+                    exDate: "2020-10-30"
+                }],
+            },
+            computed: {
+                doing() {
+                    return this.todoList.filter(_ => {
+                        if (this.filterName !== "") {
+                            return _.done === false && !_.deleted && _.name === this.filterName
+                        } else {
+                            return _.done === false && !_.deleted
+                        }
+                    })
+                },
+                completed() {
+                    return this.todoList.filter(_ => _.done === true && !_.deleted)
+                }
+            },
+            methods: {
+                addTodo() {
+                    if (this.inputData !== null && this.inputData !== "") {
+                        this.todoList.push({
+                            id: this.todoList.length + 1,
+                            text: this.inputData,
+                            done: false,
+                            deleted: false,
+                            name: this.userName,
+                            exDate: this.exDate
+                        })
+                    }
+                    this.inputData = null
+                },
+                removeTodo(id) {
+                    this.todoList[id - 1].deleted = true
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>
